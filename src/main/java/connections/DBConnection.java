@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class DBConnection{
@@ -47,7 +48,11 @@ public class DBConnection{
 	{
 		try {
 			return DBConnection.statement.executeUpdate(query);
-		} catch (SQLException e) {
+		} catch(SQLIntegrityConstraintViolationException e)
+		{
+			
+		}
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return 0;
@@ -69,7 +74,7 @@ public class DBConnection{
 		DBConnection.password = password;
 		DBConnection.database = database;
 		try {
-			DBConnection.connection = DriverManager.getConnection(baseURL + database, username, password);
+			DBConnection.connection = DriverManager.getConnection(baseURL + database + "?user=" + username + "&password=" + password + "&useLegacyDatetimeCode=false&serverTimezone=UTC");
 			statement = DBConnection.connection.createStatement();
 		} catch (SQLException e) {
 			e.printStackTrace();
