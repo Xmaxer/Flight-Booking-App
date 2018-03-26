@@ -1,10 +1,13 @@
 package connections;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 
 public class DBConnection{
@@ -51,6 +54,17 @@ public class DBConnection{
 		} catch(SQLIntegrityConstraintViolationException e)
 		{
 			
+		}
+		catch(SQLSyntaxErrorException e)
+		{
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String s = sw.toString();
+			if(s.contains("already exists"))
+				System.out.println("Table already exists...");
+			else
+				e.printStackTrace();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

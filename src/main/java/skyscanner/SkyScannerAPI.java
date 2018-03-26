@@ -1,5 +1,8 @@
 package skyscanner;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -18,7 +21,9 @@ public class SkyScannerAPI {
 	private final static String allValidLocalesURL = "http://partners.api.skyscanner.net/apiservices/reference/v1.0/locales?apiKey=" + API_KEY;
 	private final static String allCurrenciesURL = "http://partners.api.skyscanner.net/apiservices/reference/v1.0/currencies?apiKey=" + API_KEY;
 	private final static String allGeoLocationsURL = "http://partners.api.skyscanner.net/apiservices/geo/v1.0?apiKey=" + API_KEY;
-
+	private final static String quotesBaseURL = "http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/";
+	
+	
 	public static void createTables()
 	{
 		if(DBConnection.getConnection() != null)
@@ -35,6 +40,21 @@ public class SkyScannerAPI {
 	}
 
 	private static void geoLocationsTable() {
+		DatabaseMetaData meta;
+		try {
+			meta = DBConnection.getConnection().getMetaData();
+			ResultSet res = meta.getTables(null, null, "airport", 
+				     new String[] {"TABLE"});
+			if(res.next())
+			{
+				System.out.println("Tables already exist.");
+				return;
+			}
+
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		  
 		DBConnection.update("CREATE TABLE IF NOT EXISTS continent ("
 				+ "continentID varchar(10),"
 				+ "name varchar(255),"

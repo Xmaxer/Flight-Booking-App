@@ -1,6 +1,7 @@
 package main;
 
 import connections.DBConnection;
+import gui.GUI;
 import hidden.Constants;
 import skyscanner.SkyScannerAPI;
 
@@ -21,6 +22,9 @@ public class Main {
 		DBConnection.closeConnection();
 		DBConnection.createConnection(USER, PASS, DB_NAME);
 		SkyScannerAPI.createTables();
-
+		
+		GUI.launchGUI(args);
+		/*String d = Downloader.getData("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/IE/EUR/en-GB/DUBL/PARI/2018-05-10/2018-05-15/?apiKey=" + Constants.SKYSCANNER_API_KEY);
+		System.out.println(d);*/
 	}
 }
