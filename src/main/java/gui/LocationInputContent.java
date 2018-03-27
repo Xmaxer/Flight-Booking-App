@@ -43,6 +43,8 @@ public class LocationInputContent extends VBox{
 		
 		KTextField<Airport> outboundField = new KTextField<Airport>();
 		KTextField<Airport> inboundField = new KTextField<Airport>();
+		inboundField.setSearchable(true);
+		outboundField.setSearchable(true);
 		inboundField.setMaxLength(30);
 		outboundField.setMaxLength(30);
 		inboundField.setPromptText("Inbound location");

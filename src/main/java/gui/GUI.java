@@ -20,7 +20,7 @@ public class GUI extends Application{
 		
 		VBox firstPageRoot = new VBox();
 		VBox secondPageRoot = new VBox();
-		firstPageRoot.setAlignment(Pos.TOP_CENTER);
+
 		
 		List<Scene> scenes = new ArrayList<Scene>();
 		
@@ -31,11 +31,12 @@ public class GUI extends Application{
 		scenes.add(secondPageScene);
 		
 		LocationInputContent searchInputs = new LocationInputContent();
-		
+		CustomerDetailsPage customerDetails = new CustomerDetailsPage();
 		
 		NavButtons buttonsContainer = new NavButtons(mainStage, scenes);
+	//	NavButtons buttonsContainer2 = new NavButtons(mainStage, scenes);
 		
-		secondPageRoot.getChildren().addAll(buttonsContainer);
+		secondPageRoot.getChildren().addAll(customerDetails, buttonsContainer);
 		
 		firstPageRoot.getChildren().addAll(searchInputs, buttonsContainer);
 		

@@ -6,6 +6,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -18,8 +19,12 @@ public class KTextField<T> extends TextField{
 	public static final double DEFAULT_STRENGTH = 5;
 	public static final double DEFAULT_SPEED = 0.5;
 	public static final int DEFAULT_MAX_LENGTH = 25;
+	public static final int DEFAULT_WIDTH = 200;
 	private VBox container;
 	private ListView<T> resultsBox;
+	private Label label;
+	private boolean searchable;
+	private boolean labelled;
 
 	public KTextField(String text)
 	{
@@ -75,6 +80,7 @@ public class KTextField<T> extends TextField{
 
 	}
 	private void start() {
+		this.setMaxWidth(DEFAULT_WIDTH);
 		KTextField<T> itself = this;
 		container = new VBox();
 		maxLength = DEFAULT_MAX_LENGTH;
@@ -82,8 +88,11 @@ public class KTextField<T> extends TextField{
 		resultsBox = new ListView<T>();
 		resultsBox.setMaxHeight(0);
 		resultsBox.setOpacity(0);
-		container.getChildren().addAll(this, resultsBox);
-
+		container.getChildren().addAll(this);
+		label = new Label();
+		searchable = false;
+		labelled = false;
+		
 		resultsBox.getSelectionModel().selectedItemProperty().addListener((obs, old, n) -> {
 			if(n != null)
 			{
@@ -155,5 +164,48 @@ public class KTextField<T> extends TextField{
 	}
 	public void setMaxLength(int maxLength) {
 		this.maxLength = maxLength;
+	}
+	public Label getLabel() {
+		return label;
+	}
+	public void setLabel(Label label) {
+		this.label = label;
+	}
+	public static double getDefaultStrength() {
+		return DEFAULT_STRENGTH;
+	}
+	public static double getDefaultSpeed() {
+		return DEFAULT_SPEED;
+	}
+	public static int getDefaultMaxLength() {
+		return DEFAULT_MAX_LENGTH;
+	}
+	public boolean isSearchable() {
+		return searchable;
+	}
+	public void setSearchable(boolean searchable) {
+		if(searchable)
+		{
+			container.getChildren().add(container.getChildren().size(), resultsBox);
+		}
+		else
+		{
+			container.getChildren().remove(resultsBox);
+		}
+		this.searchable = searchable;
+	}
+	public boolean isLabelled() {
+		return labelled;
+	}
+	public void setLabelled(boolean labelled) {
+		if(labelled)
+		{
+			container.getChildren().add(0,label);
+		}
+		else
+		{
+			container.getChildren().remove(label);
+		}
+		this.labelled = labelled;
 	}
 }

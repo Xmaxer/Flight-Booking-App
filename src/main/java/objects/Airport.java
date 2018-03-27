@@ -1,7 +1,12 @@
 package objects;
 
-public class Airport {
+public class Airport implements Cloneable{
 	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	public String airport;
 	public String city;
 	public String country;
