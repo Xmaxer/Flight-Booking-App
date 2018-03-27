@@ -47,7 +47,6 @@ public class SkyScannerAPI {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				System.out.println("Tables already exist.");
 				return;
 			}
 
@@ -158,7 +157,6 @@ public class SkyScannerAPI {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				System.out.println("Tables already exist.");
 				return;
 			}
 
@@ -195,7 +193,6 @@ public class SkyScannerAPI {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				System.out.println("Tables already exist.");
 				return;
 			}
 

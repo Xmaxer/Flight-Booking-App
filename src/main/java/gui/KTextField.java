@@ -6,17 +6,20 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class KTextField extends TextField{
+public class KTextField<T> extends TextField{
 
-	private int maxCharLength;
+	private int maxLength;
 	private Filter filter;
-	private final double DEFAULT_STRENGTH = 5;
-	private final double DEFAULT_SPEED = 0.5;
-	private ResultsBox resultsBox;
-	private boolean searchable;
+	public static final double DEFAULT_STRENGTH = 5;
+	public static final double DEFAULT_SPEED = 0.5;
+	public static final int DEFAULT_MAX_LENGTH = 25;
+	private VBox container;
+	private ListView<T> resultsBox;
 
 	public KTextField(String text)
 	{
@@ -28,7 +31,7 @@ public class KTextField extends TextField{
 		super();
 		start();
 	}
-	
+
 	public void shakeAnimation(double strength, double speed)
 	{
 		if(speed <= 0)
@@ -63,14 +66,31 @@ public class KTextField extends TextField{
 	{
 		shakeAnimation(DEFAULT_STRENGTH, DEFAULT_SPEED);
 	}
-	
+
+	public void setMaxWidthCustom(double value)
+	{
+		this.setMaxWidth(value);
+		this.setMinWidth(value);
+		resultsBox.setMaxWidth(this.getMaxWidth());
+
+	}
 	private void start() {
-		KTextField itself = this;
-		maxCharLength = 30;
+		KTextField<T> itself = this;
+		container = new VBox();
+		maxLength = DEFAULT_MAX_LENGTH;
 		filter = Filter.ALLOW_ALL;
-		resultsBox = new ResultsBox(this);
-		searchable = false;
-		
+		resultsBox = new ListView<T>();
+		resultsBox.setMaxHeight(0);
+		resultsBox.setOpacity(0);
+		container.getChildren().addAll(this, resultsBox);
+
+		resultsBox.getSelectionModel().selectedItemProperty().addListener((obs, old, n) -> {
+			if(n != null)
+			{
+				itself.setText(n.toString());
+				itself.resultsBox.setOpacity(0);
+			}
+		});
 		this.textProperty().addListener(new ChangeListener<String>() {
 
 			@Override
@@ -84,7 +104,7 @@ public class KTextField extends TextField{
 				{
 				case LETTERS_ONLY:
 					for(char c : chars)
-						if(Character.isLetter(c))
+						if(Character.isLetter(c) || Character.isSpaceChar(c))
 							actual += String.valueOf(c);
 					break;
 				case NUMBERS_ONLY:
@@ -94,7 +114,7 @@ public class KTextField extends TextField{
 					break;
 				case NUMBERS_AND_LETTERS_ONLY:
 					for(char c : chars)
-						if(Character.isAlphabetic(c))
+						if(Character.isAlphabetic(c) || Character.isSpaceChar(c))
 							actual += String.valueOf(c);
 					break;
 				case ALLOW_ALL:
@@ -104,42 +124,36 @@ public class KTextField extends TextField{
 					break;
 				}
 
-				if(actual.length() > maxCharLength)
-					actual = oldVal;
+				if(actual.length() > maxLength)
+					actual = actual.substring(0, maxLength + 1);
 
 				itself.setText(actual);
 			}
 
 		});
 	}
-	public synchronized Filter getFilter() {
+	public Filter getFilter() {
 		return filter;
 	}
-	public synchronized void setFilter(Filter filter) {
+	public void setFilter(Filter filter) {
 		this.filter = filter;
 	}
-	public synchronized int getMaxCharLength() {
-		return maxCharLength;
+	public VBox getContainer() {
+		return container;
 	}
-	public synchronized void setMaxCharLength(int maxCharLength) {
-		this.maxCharLength = maxCharLength;
+	public void setContainer(VBox container) {
+		this.container = container;
 	}
-	public boolean isSearchable() {
-		return searchable;
-	}
-	public void setSearchable(boolean searchable) {
-		this.searchable = searchable;
-	}
-	public double getDEFAULT_STRENGTH() {
-		return DEFAULT_STRENGTH;
-	}
-	public double getDEFAULT_SPEED() {
-		return DEFAULT_SPEED;
-	}
-	public ResultsBox getResultsBox() {
+	public ListView<T> getResultsBox() {
 		return resultsBox;
 	}
-	public void setResultsBox(ResultsBox resultsBox) {
+	public void setResultsBox(ListView<T> resultsBox) {
 		this.resultsBox = resultsBox;
+	}
+	public int getMaxLength() {
+		return maxLength;
+	}
+	public void setMaxLength(int maxLength) {
+		this.maxLength = maxLength;
 	}
 }
