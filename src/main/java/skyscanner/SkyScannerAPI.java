@@ -151,6 +151,20 @@ public class SkyScannerAPI {
 	}
 
 	private static void currenciesTable() {
+		DatabaseMetaData meta;
+		try {
+			meta = DBConnection.getConnection().getMetaData();
+			ResultSet res = meta.getTables(null, null, "currency", 
+				     new String[] {"TABLE"});
+			if(res.next())
+			{
+				System.out.println("Tables already exist.");
+				return;
+			}
+
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		DBConnection.update("CREATE TABLE IF NOT EXISTS currency ("
 				+ "currencyID varchar(10),"
 				+ "symbol varchar(10),"
@@ -174,6 +188,20 @@ public class SkyScannerAPI {
 	}
 
 	private static void localesTable() {
+		DatabaseMetaData meta;
+		try {
+			meta = DBConnection.getConnection().getMetaData();
+			ResultSet res = meta.getTables(null, null, "locale", 
+				     new String[] {"TABLE"});
+			if(res.next())
+			{
+				System.out.println("Tables already exist.");
+				return;
+			}
+
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		DBConnection.update("CREATE TABLE IF NOT EXISTS locale ("
 				+ "localeID varchar(20),"
 				+ "name varchar(255),"

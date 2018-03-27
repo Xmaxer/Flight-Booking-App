@@ -1,6 +1,7 @@
 package main;
 
 import connections.DBConnection;
+import connections.Downloader;
 import gui.GUI;
 import hidden.Constants;
 import skyscanner.SkyScannerAPI;
@@ -24,7 +25,7 @@ public class Main {
 		SkyScannerAPI.createTables();
 		
 		GUI.launchGUI(args);
-		/*String d = Downloader.getData("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/IE/EUR/en-GB/DUBL/PARI/2018-05-10/2018-05-15/?apiKey=" + Constants.SKYSCANNER_API_KEY);
-		System.out.println(d);*/
+		//String d = Downloader.getData("http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/IE/EUR/en-GB/DUB/ORY/2018-05-10/2018-05-15/?apiKey=" + Constants.SKYSCANNER_API_KEY);
+		//System.out.println(d);
 	}
 }
