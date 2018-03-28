@@ -2,6 +2,7 @@ package gui;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,26 +14,46 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import objects.Airport;
+import objects.FlightBooking;
 
 public class LocationInputContent extends VBox{
 
 	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 50;
 	private final static double WIDTH = GUI.FIRST_PAGE_WIDTH;
-
+	private KTextField<Airport> outboundField;
+	private KTextField<Airport> inboundField;
 	public LocationInputContent()
 	{
+		DatePicker forwardDate = new DatePicker();
+		DatePicker returnDate = new DatePicker();
+		returnDate.setDisable(true);
+		forwardDate.setMaxWidth(200);
+		returnDate.setMaxWidth(200);
+		forwardDate.setTooltip(new Tooltip("Outbound date"));
+		returnDate.setTooltip(new Tooltip("Return date"));
+		HBox dateFields = new HBox();
+		dateFields.getChildren().addAll(forwardDate, returnDate);
+		dateFields.setSpacing(50);
+		dateFields.setAlignment(Pos.CENTER);
 		this.setMinSize(WIDTH, HEIGHT);
 		this.setMaxSize(WIDTH, HEIGHT);
 		HBox fields = new HBox();
-
+		HBox checkboxContainer = new HBox();
+		checkboxContainer.setAlignment(Pos.CENTER_RIGHT);
+		checkboxContainer.setPadding(new Insets(0, 25, 0, 0));
+		CheckBox returning = new CheckBox();
+		checkboxContainer.getChildren().add(returning);
+		returning.setText("Return");
 		Text top = new Text("Search flights using fields below.");
 		top.setFont(Font.font(20));
 		this.setSpacing(10);
@@ -40,9 +61,8 @@ public class LocationInputContent extends VBox{
 		this.getStyleClass().add("start-box");
 		fields.setAlignment(Pos.CENTER);
 		fields.setSpacing(50);
-		
-		KTextField<Airport> outboundField = new KTextField<Airport>();
-		KTextField<Airport> inboundField = new KTextField<Airport>();
+		outboundField = new KTextField<Airport>();
+		inboundField = new KTextField<Airport>();
 		inboundField.setSearchable(true);
 		outboundField.setSearchable(true);
 		inboundField.setMaxLength(30);
@@ -53,60 +73,49 @@ public class LocationInputContent extends VBox{
 		outboundField.setPromptText("Outbound location");
 		outboundField.setFilter(Filter.LETTERS_ONLY);
 		outboundField.setMaxWidthCustom(200);
-		//	inboundField.setFocusTraversable(false);
-		//	outboundField.setFocusTraversable(false);
-		//inboundField.getResultsBox().prefHeightProperty().bind(Bindings.size(itemListProperty).multiply(LIST_CELL_HEIGHT));
 
 		inboundField.getResultsBox().setCellFactory(new AirportCellFactory());
 		outboundField.getResultsBox().setCellFactory(new AirportCellFactory());
 		fields.getChildren().addAll(outboundField.getContainer(), inboundField.getContainer());
-		this.getChildren().addAll(top, fields);
+		this.getChildren().addAll(top, dateFields, checkboxContainer, fields);
 
 		inboundField.textProperty().addListener(new FlightSearchListener(inboundField));
 		outboundField.textProperty().addListener(new FlightSearchListener(outboundField));
 		inboundField.focusedProperty().addListener(new FlightSearchFocusedListener(inboundField));
 		outboundField.focusedProperty().addListener(new FlightSearchFocusedListener(outboundField));
-	}
-	private void start(Parent root) {
+		forwardDate.valueProperty().addListener((obs, o, n) -> {
+			if(n != null)
+				GUI.customer.getBooking().setOutboundDate(n);
+		});
+		returnDate.valueProperty().addListener((obs, o, n) ->{
+			if(n != null)
+				GUI.customer.getBooking().setReturnDate(n);
+		});
+		inboundField.getResultsBox().getSelectionModel().selectedItemProperty().addListener((obs, o ,n) -> {
+			if(n != null)
+			{
+				GUI.customer.getBooking().setAirportInbound((Airport) n);
 
-
-		if(root.getClass().isInstance(new VBox()))
-		{
-			VBox start = (VBox) root;
-			HBox fields = new HBox();
-
-			Text top = new Text("Search flights using fields below.");
-			top.setFont(Font.font(20));
-			start.setSpacing(10);
-			start.setAlignment(Pos.TOP_CENTER);
-			start.getStyleClass().add("start-box");
-			fields.setAlignment(Pos.CENTER);
-			fields.setSpacing(50);
-			
-			KTextField<Airport> outboundField = new KTextField<Airport>();
-			KTextField<Airport> inboundField = new KTextField<Airport>();
-			inboundField.setMaxLength(30);
-			outboundField.setMaxLength(30);
-			inboundField.setPromptText("Inbound location");
-			inboundField.setFilter(Filter.LETTERS_ONLY);
-			inboundField.setMaxWidthCustom(200);
-			outboundField.setPromptText("Outbound location");
-			outboundField.setFilter(Filter.LETTERS_ONLY);
-			outboundField.setMaxWidthCustom(200);
-			//	inboundField.setFocusTraversable(false);
-			//	outboundField.setFocusTraversable(false);
-			//inboundField.getResultsBox().prefHeightProperty().bind(Bindings.size(itemListProperty).multiply(LIST_CELL_HEIGHT));
-
-			inboundField.getResultsBox().setCellFactory(new AirportCellFactory());
-			outboundField.getResultsBox().setCellFactory(new AirportCellFactory());
-			fields.getChildren().addAll(outboundField.getContainer(), inboundField.getContainer());
-			start.getChildren().addAll(top, fields);
-
-			inboundField.textProperty().addListener(new FlightSearchListener(inboundField));
-			outboundField.textProperty().addListener(new FlightSearchListener(outboundField));
-			inboundField.focusedProperty().addListener(new FlightSearchFocusedListener(inboundField));
-			outboundField.focusedProperty().addListener(new FlightSearchFocusedListener(outboundField));
-		}
+			}
+		});
+		outboundField.getResultsBox().getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+			if(n != null)
+			{
+				GUI.customer.getBooking().setAirportOutbound((Airport) n);
+			}
+		});
+		returning.selectedProperty().addListener((obs, o, n) -> {
+			if(n)
+			{
+				returnDate.setDisable(false);
+				GUI.customer.getBooking().setReturning(true);
+			}
+			else
+			{
+				returnDate.setDisable(true);
+				GUI.customer.getBooking().setReturning(false);
+			}
+		});
 	}
 	private class FlightSearchFocusedListener implements ChangeListener<Boolean>
 	{
@@ -170,11 +179,17 @@ public class LocationInputContent extends VBox{
 					list = FXCollections.observableList(items);
 					field.getResultsBox().setItems(list);
 				}
-				field.getResultsBox().refresh();
+				//field.getResultsBox().refresh();
 				field.getResultsBox().setMaxHeight(65*field.getResultsBox().getItems().size());
 				field.getResultsBox().setMinHeight(65*field.getResultsBox().getItems().size());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}		}	
+	}
+	public KTextField<Airport> getOutboundField() {
+		return outboundField;
+	}
+	public KTextField<Airport> getInboundField() {
+		return inboundField;
 	}
 }

@@ -1,18 +1,23 @@
 package objects;
 
+import java.time.LocalDate;
+
 public class FlightBooking implements Cloneable{
 
 	private Airport airportOutbound;
 	private Airport airportInbound;
-	private double totalCost;
+	private Double totalCost;
 	private String airlineOutbound;
 	private String airlineInbound;
+	private LocalDate outboundDate;
+	private LocalDate returnDate;
+	private boolean returning;
 	
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		FlightBooking clone = (FlightBooking) super.clone();
-		clone.setAirportInbound((Airport) clone.getAirportInbound().clone());
-		clone.setAirportOutbound((Airport) clone.getAirportOutbound().clone());
+		clone.setAirportInbound(((Airport) clone.getAirportInbound() != null) ? (Airport) clone.getAirportInbound().clone() : null);
+		clone.setAirportOutbound(((Airport) clone.getAirportOutbound() != null) ? (Airport) clone.getAirportOutbound().clone() : null);
 		return clone;
 	}
 	
@@ -23,14 +28,24 @@ public class FlightBooking implements Cloneable{
 		this.totalCost = cost;
 		this.airlineOutbound = airlineOutbound;
 		this.airlineInbound = airlineInbound;
+		this.returning = false;
 	}
 
+	public FlightBooking()
+	{
+		this.returning = false;
+	}
 	public Airport getAirportOutbound() {
 		return airportOutbound;
 	}
 
 	public void setAirportOutbound(Airport airportOutbound) {
-		this.airportOutbound = airportOutbound;
+		try {
+			
+			this.airportOutbound = airportOutbound != null ? airportOutbound.clone() : null;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Airport getAirportInbound() {
@@ -38,14 +53,19 @@ public class FlightBooking implements Cloneable{
 	}
 
 	public void setAirportInbound(Airport airportInbound) {
-		this.airportInbound = airportInbound;
+		try {
+			
+			this.airportInbound = airportInbound != null ? airportInbound.clone() : null;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public double getTotalCost() {
+	public Double getTotalCost() {
 		return totalCost;
 	}
 
-	public void setTotalCost(double totalCost) {
+	public void setTotalCost(Double totalCost) {
 		this.totalCost = totalCost;
 	}
 
@@ -63,5 +83,29 @@ public class FlightBooking implements Cloneable{
 
 	public void setAirlineInbound(String airlineInbound) {
 		this.airlineInbound = airlineInbound;
+	}
+
+	public LocalDate getOutboundDate() {
+		return outboundDate;
+	}
+
+	public void setOutboundDate(LocalDate outboundDate) {
+		this.outboundDate = outboundDate;
+	}
+
+	public LocalDate getReturnDate() {
+		return returnDate;
+	}
+
+	public void setReturnDate(LocalDate returnDate) {
+		this.returnDate = returnDate;
+	}
+
+	public boolean isReturning() {
+		return returning;
+	}
+
+	public void setReturning(boolean returning) {
+		this.returning = returning;
 	}
 }

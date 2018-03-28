@@ -97,7 +97,7 @@ public class KTextField<T> extends TextField{
 			if(n != null)
 			{
 				itself.setText(n.toString());
-				itself.resultsBox.setOpacity(0);
+				this.resultsBox.setOpacity(0);
 			}
 		});
 		this.textProperty().addListener(new ChangeListener<String>() {

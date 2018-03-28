@@ -3,8 +3,8 @@ package objects;
 public class Airport implements Cloneable{
 	
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	protected Airport clone() throws CloneNotSupportedException {
+		return (Airport) super.clone();
 	}
 
 	public String airport;

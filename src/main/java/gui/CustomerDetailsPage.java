@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import constants.Filter;
+import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
 public class CustomerDetailsPage extends VBox{
@@ -15,6 +17,8 @@ public class CustomerDetailsPage extends VBox{
 	{
 		this.setMaxSize(WIDTH, HEIGHT);
 		this.setMinSize(WIDTH, HEIGHT);
+		this.setAlignment(Pos.CENTER);
+		this.setSpacing(30);
 		KTextField fnameField = new KTextField();
 		KTextField lnameField = new KTextField();
 		KTextField phoneField = new KTextField();
@@ -29,6 +33,16 @@ public class CustomerDetailsPage extends VBox{
 		}
 		
 		fnameField.getLabel().setText("First name: ");
+		lnameField.getLabel().setText("Last name: ");
+		phoneField.getLabel().setText("Phone number: ");
+		passportField.getLabel().setText("Passport number:");
+		
+		fnameField.setFilter(Filter.LETTERS_ONLY);
+		lnameField.setFilter(Filter.LETTERS_ONLY);
+		phoneField.setFilter(Filter.NUMBERS_ONLY);
+		passportField.setFilter(Filter.NUMBERS_ONLY);
+		
+		
 		
 		this.getChildren().addAll(fnameField.getContainer(), lnameField.getContainer(), phoneField.getContainer(), passportField.getContainer());
 	}

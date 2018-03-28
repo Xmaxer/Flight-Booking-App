@@ -3,6 +3,7 @@ package skyscanner;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -14,6 +15,7 @@ import connections.DBConnection;
 import connections.Downloader;
 import exceptions.NoDatabaseConnectedException;
 import hidden.Constants;
+import objects.FlightBooking;
 
 public class SkyScannerAPI {
 
@@ -221,5 +223,22 @@ public class SkyScannerAPI {
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public static String getflights(FlightBooking booking)
+	{
+		String market = "IE";
+		String currency = "EUR";
+		String locale = "en-GB";
+		String origin = booking.getAirportOutbound().airportID;
+		String destination = booking.getAirportInbound().airportID;
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String outDate = booking.getOutboundDate().format(format);
+		String returnDate = (booking.getReturnDate() != null) ? booking.getReturnDate().format(format) : "";
+		
+		String url = quotesBaseURL + market + "/" + currency + "/" + locale + "/" + origin + "/" + destination + "/" + outDate + "/" + returnDate + "?apiKey=" + Constants.SKYSCANNER_API_KEY;
+		String results = Downloader.getData(url);
+		
+		return results;
 	}
 }

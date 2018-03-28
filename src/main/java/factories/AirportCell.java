@@ -14,7 +14,9 @@ public class AirportCell extends ListCell<Airport>{
 	@Override
 	public void updateItem(Airport item, boolean empty)
 	{
+
 		super.updateItem(item, empty);
+		
 		if(item == null || empty)
 		{
 			setText("");
@@ -36,5 +38,6 @@ public class AirportCell extends ListCell<Airport>{
 			setGraphic(flow);
 			setText("");
 		}
+
 	}
 }
