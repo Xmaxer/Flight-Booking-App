@@ -16,12 +16,13 @@ public class GUI extends Application{
 
 	public static final int FIRST_PAGE_HEIGHT = 500;
 	public static final int FIRST_PAGE_WIDTH = 500;
-	public static Customer customer = new Customer();
+	public final static Customer customer = new Customer();
+	private static Stage mainStage;
 
 	@Override
 	public void start(Stage mainStage) throws Exception {
 
-
+		GUI.mainStage = mainStage;
 		VBox firstPageRoot = new VBox();
 		VBox secondPageRoot = new VBox();
 		VBox thirdPageRoot = new VBox();
@@ -39,7 +40,9 @@ public class GUI extends Application{
 		scenes.add(thirdPageScene);
 
 		LocationInputContent searchInputs = new LocationInputContent();
-		CustomerDetailsPage customerDetails = new CustomerDetailsPage();
+		searchInputs.setOnAction();
+		
+		CustomerDetailsContent customerDetails = new CustomerDetailsContent();
 		PickFlightsContent flightChoice = new PickFlightsContent();
 
 		NavButtons buttonsContainer = new NavButtons(mainStage, scenes);
@@ -61,6 +64,10 @@ public class GUI extends Application{
 	public static void launchGUI(String[] args)
 	{
 		launch(args);
+	}
+
+	public static Stage getMainStage() {
+		return mainStage;
 	}
 
 }

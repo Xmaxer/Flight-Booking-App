@@ -25,7 +25,7 @@ public class Airport implements Cloneable{
 	@Override
 	public String toString()
 	{
-		return airport;
+		return airport + " (" + airportID + ")";
 	}
 	public String getAirport() {
 		return airport;

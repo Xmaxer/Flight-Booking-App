@@ -2,7 +2,6 @@ package gui;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,10 +9,13 @@ import java.util.List;
 import connections.DBConnection;
 import constants.Filter;
 import factories.AirportCellFactory;
+import interfaces.Actionable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -24,18 +26,22 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import objects.Airport;
-import objects.FlightBooking;
+import wrappers.LocationInputScene;
 
-public class LocationInputContent extends VBox{
+public class LocationInputContent extends VBox implements Actionable{
 
 	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 50;
 	private final static double WIDTH = GUI.FIRST_PAGE_WIDTH;
 	private KTextField<Airport> outboundField;
 	private KTextField<Airport> inboundField;
+	private DatePicker forwardDate;
+	private DatePicker returnDate;
+	private CheckBox returning;
+	
 	public LocationInputContent()
 	{
-		DatePicker forwardDate = new DatePicker();
-		DatePicker returnDate = new DatePicker();
+		forwardDate = new DatePicker();
+		returnDate = new DatePicker();
 		returnDate.setDisable(true);
 		forwardDate.setMaxWidth(200);
 		returnDate.setMaxWidth(200);
@@ -51,7 +57,7 @@ public class LocationInputContent extends VBox{
 		HBox checkboxContainer = new HBox();
 		checkboxContainer.setAlignment(Pos.CENTER_RIGHT);
 		checkboxContainer.setPadding(new Insets(0, 25, 0, 0));
-		CheckBox returning = new CheckBox();
+		returning = new CheckBox();
 		checkboxContainer.getChildren().add(returning);
 		returning.setText("Return");
 		Text top = new Text("Search flights using fields below.");
@@ -83,27 +89,6 @@ public class LocationInputContent extends VBox{
 		outboundField.textProperty().addListener(new FlightSearchListener(outboundField));
 		inboundField.focusedProperty().addListener(new FlightSearchFocusedListener(inboundField));
 		outboundField.focusedProperty().addListener(new FlightSearchFocusedListener(outboundField));
-		forwardDate.valueProperty().addListener((obs, o, n) -> {
-			if(n != null)
-				GUI.customer.getBooking().setOutboundDate(n);
-		});
-		returnDate.valueProperty().addListener((obs, o, n) ->{
-			if(n != null)
-				GUI.customer.getBooking().setReturnDate(n);
-		});
-		inboundField.getResultsBox().getSelectionModel().selectedItemProperty().addListener((obs, o ,n) -> {
-			if(n != null)
-			{
-				GUI.customer.getBooking().setAirportInbound((Airport) n);
-
-			}
-		});
-		outboundField.getResultsBox().getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			if(n != null)
-			{
-				GUI.customer.getBooking().setAirportOutbound((Airport) n);
-			}
-		});
 		returning.selectedProperty().addListener((obs, o, n) -> {
 			if(n)
 			{
@@ -126,7 +111,6 @@ public class LocationInputContent extends VBox{
 		}
 		@Override
 		public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean newVal) {
-			//System.out.println(newVal);
 			if(!newVal)
 			{
 				field.getResultsBox().setOpacity(0);
@@ -179,7 +163,6 @@ public class LocationInputContent extends VBox{
 					list = FXCollections.observableList(items);
 					field.getResultsBox().setItems(list);
 				}
-				//field.getResultsBox().refresh();
 				field.getResultsBox().setMaxHeight(65*field.getResultsBox().getItems().size());
 				field.getResultsBox().setMinHeight(65*field.getResultsBox().getItems().size());
 			} catch (SQLException e) {
@@ -191,5 +174,46 @@ public class LocationInputContent extends VBox{
 	}
 	public KTextField<Airport> getInboundField() {
 		return inboundField;
+	}
+	@Override
+	public void setOnAction() {
+		NavButtons.getNext().setOnAction(new NextButtonAction());
+	}
+
+	private class NextButtonAction implements EventHandler<ActionEvent>{
+
+		@Override
+		public void handle(ActionEvent arg0) {
+			if(GUI.getMainStage().getScene() instanceof LocationInputScene)
+			{
+				if(forwardDate.getValue() != null)
+					GUI.customer.getBooking().setOutboundDate(forwardDate.getValue().atTime(12, 0));
+				else
+					return;
+				if(returning.isSelected())
+					if(returnDate.getValue() != null)
+						GUI.customer.getBooking().setReturnDate(returnDate.getValue().atTime(12, 0));
+					else
+						return;
+				else
+					GUI.customer.getBooking().setReturnDate(null);
+				if(inboundField.getResultsBox().getSelectionModel().getSelectedItem() != null)
+					GUI.customer.getBooking().setAirportInbound((Airport) inboundField.getResultsBox().getSelectionModel().getSelectedItem());
+				else
+				{
+					inboundField.shakeAnimation();
+					return;
+				}
+				if(outboundField.getResultsBox().getSelectionModel().getSelectedItem() != null)
+					GUI.customer.getBooking().setAirportOutbound((Airport) outboundField.getResultsBox().getSelectionModel().getSelectedItem());
+				else
+				{
+					outboundField.shakeAnimation();
+					return;
+				}
+				NavButtons.moveScenes();
+			}
+		}
+
 	}
 }

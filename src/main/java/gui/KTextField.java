@@ -6,6 +6,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -89,6 +90,7 @@ public class KTextField<T> extends TextField{
 		resultsBox.setMaxHeight(0);
 		resultsBox.setOpacity(0);
 		container.getChildren().addAll(this);
+		container.setMaxWidth(this.getMaxWidth());
 		label = new Label();
 		searchable = false;
 		labelled = false;
@@ -123,7 +125,7 @@ public class KTextField<T> extends TextField{
 					break;
 				case NUMBERS_AND_LETTERS_ONLY:
 					for(char c : chars)
-						if(Character.isAlphabetic(c) || Character.isSpaceChar(c))
+						if(Character.isLetterOrDigit(c) || Character.isSpaceChar(c))
 							actual += String.valueOf(c);
 					break;
 				case ALLOW_ALL:

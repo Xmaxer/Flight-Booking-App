@@ -50,6 +50,7 @@ public class DBConnection{
 	public static synchronized int update(String query)
 	{
 		try {
+			System.out.println(query);
 			return DBConnection.statement.executeUpdate(query);
 		} catch(SQLIntegrityConstraintViolationException e)
 		{

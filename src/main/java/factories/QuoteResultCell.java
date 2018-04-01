@@ -1,13 +1,16 @@
 package factories;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import objects.Airport;
+import javafx.scene.text.Text;
+import objects.FlightBooking;
 
-public class QuoteResultCell extends ListCell<VBox>{
+public class QuoteResultCell extends ListCell<FlightBooking>{
 
 	@Override
-	public void updateItem(VBox item, boolean empty)
+	public void updateItem(FlightBooking item, boolean empty)
 	{
 		super.updateItem(item, empty);
 		if(item == null || empty)
@@ -17,7 +20,29 @@ public class QuoteResultCell extends ListCell<VBox>{
 		}
 		else
 		{
+			VBox result = new VBox();
+			result.setAlignment(Pos.CENTER);
 			
+			Text price = new Text(String.valueOf(item.getTotalCost()));
+			Text outboundLoc = new Text(item.getAirportOutbound().getAirport());
+			Text inboundLoc = new Text(item.getAirportInbound().getAirport());
+			Text outboundAirline = new Text(item.getAirlineDeparture());
+			Text inboundAirline = new Text(item.getAirlineReturn());
+			
+			HBox h = new HBox();
+			
+			VBox left = new VBox();
+			VBox right = new VBox();
+			
+			left.getChildren().addAll(outboundAirline, outboundLoc);
+			right.getChildren().addAll(inboundAirline, inboundLoc);
+			left.setAlignment(Pos.CENTER);
+			right.setAlignment(Pos.CENTER);
+			h.setAlignment(Pos.CENTER);
+			h.getChildren().addAll(left, right);
+			result.getChildren().addAll(price, h);
+			h.setSpacing(100);
+			this.setGraphic(result);
 		}
 	}
 }

@@ -13,21 +13,23 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import skyscanner.SkyScannerAPI;
+import wrappers.CustomerDetailsScene;
 import wrappers.LocationInputScene;
+import wrappers.PickFlightsScene;
 
 public class NavButtons extends HBox{
 	private final static int WIDTH = GUI.FIRST_PAGE_WIDTH;
 	private final static int HEIGHT = 50;
-	private Button exit;
-	private Button next;
-	private Button back;
+	private static Button exit = new Button("Exit");
+	private static Button next = new Button("Next");
+	private static Button back = new Button("Back");
+	private static Stage mainStage;
+	private static List<Scene> scenes;
 	public NavButtons(Stage mainStage, List<Scene> scenes)
 	{
+		NavButtons.scenes = scenes;
+		NavButtons.mainStage = mainStage;
 		List<Button> navButtons = new ArrayList<Button>();
-		exit = new Button("Exit");
-		next = new Button("Next");
-		back = new Button("Back");
 
 		navButtons.addAll(Arrays.asList(exit, next, back));
 
@@ -43,60 +45,60 @@ public class NavButtons extends HBox{
 		this.setAlignment(Pos.CENTER);
 
 		exit.setOnAction(e -> System.exit(0));
-		next.setOnAction(e -> {
-			for(int i = 0, size = scenes.size(); i < size; i++)
+		
+		mainStage.sceneProperty().addListener((obs, o ,n)->{
+			if(n instanceof LocationInputScene)
 			{
-				if(mainStage.getScene().equals(scenes.get(i)) && i < (size-1))
-				{
-					Scene current = scenes.get(i);
-
-					if(current instanceof LocationInputScene)
-					{
-						if(GUI.customer.getBooking().getAirportInbound() != null && GUI.customer.getBooking().getAirportOutbound() != null && 
-								GUI.customer.getBooking().getOutboundDate() != null)
-						{
-							if(GUI.customer.getBooking().isReturning())
-							{
-								if(GUI.customer.getBooking().getReturnDate() != null)
-								{
-									moveScene(scenes, mainStage, i, 1);
-									
-								}
-							}
-							else
-							{
-								moveScene(scenes, mainStage, i, 1);
-							}
-							
-						}
-					}
-				}
+				((LocationInputContent) ((VBox) n.getRoot()).getChildren().get(0)).setOnAction();
+			}
+			if(n instanceof PickFlightsScene)
+			{
+				VBox r = (VBox) n.getRoot();
+				PickFlightsContent c = (PickFlightsContent) r.getChildren().get(0);
+				c.updateList();
+				c.setOnAction();
+			}
+			if(n instanceof CustomerDetailsScene)
+			{
+				((CustomerDetailsContent) ((VBox) n.getRoot()).getChildren().get(0)).setOnAction();
+				if(GUI.customer.getBooking().isReturning())
+					CustomerDetailsContent.getSeatsReturn().setDisable(false);
+				else
+					CustomerDetailsContent.getSeatsReturn().setDisable(true);
 			}
 		});
+		
 		back.setOnAction(e -> {
 			for(int i = 0, size = scenes.size(); i < size; i++)
-			{
 				if(mainStage.getScene().equals(scenes.get(i)) && i > 0)
-				{
-					moveScene(scenes, mainStage, i, -1);
-				}
-			}
+					moveScene(i, -1);
 		});
 	}
 
-	public Button getExit() {
+	public static Button getExit() {
 		return exit;
 	}
 
-	public Button getNext() {
+	public static Button getNext() {
 		return next;
 	}
 
-	public Button getBack() {
+	public static Button getBack() {
 		return back;
 	}
 
-	public void moveScene(List<Scene> scenes, Stage mainStage, int sceneNo, int i)
+	public static void moveScenes()
+	{
+		for(int i = 0, size = scenes.size(); i < size; i++)
+		{
+			if(mainStage.getScene().equals(scenes.get(i)) && i < (size-1))
+			{
+				moveScene(i, 1);
+				break;
+			}
+		}
+	}
+	private static void moveScene(int sceneNo, int i)
 	{
 		ObservableList<Node> obslist = scenes.get(sceneNo).getRoot().getChildrenUnmodifiable();
 		List<Node> list = new ArrayList<Node>();

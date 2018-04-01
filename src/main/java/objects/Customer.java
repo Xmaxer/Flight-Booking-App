@@ -1,11 +1,16 @@
 package objects;
 
+import java.time.LocalDate;
+
 public class Customer {
 	private String fname;
 	private String lname;
 	private String phoneNo;
 	private String passportNo;
 	private FlightBooking booking;
+	private LocalDate dob;
+	private String email;
+	private String nationality;
 	
 	public Customer(String fname, String lname, String phoneNo, String passportNo)
 	{
@@ -66,6 +71,30 @@ public class Customer {
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public LocalDate getDob() {
+		return dob;
+	}
+
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
 	}
 
 
