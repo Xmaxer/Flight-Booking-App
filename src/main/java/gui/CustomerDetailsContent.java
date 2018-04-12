@@ -3,19 +3,26 @@ package gui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import constants.Filter;
 import databases.DBTables;
 import interfaces.Actionable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import objects.Customer;
 import wrappers.CustomerDetailsScene;
 @SuppressWarnings("rawtypes")
 public class CustomerDetailsContent extends VBox implements Actionable{
@@ -29,9 +36,9 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 	private KTextField emailField;
 	private KTextField countryField;
 	private DatePicker dob;
-	private ComboBox<String> seatsDeparture;
+	private static ComboBox<String> seatsDeparture;
 	private static ComboBox<String> seatsReturn;
-	
+
 	public CustomerDetailsContent()
 	{
 		Text startup = new Text("Fill out all the fields below.");
@@ -53,8 +60,8 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 		seatsDeparture.setVisibleRowCount(10);
 		Label seatsLabelDeparture = new Label("Seat number (outbound): ");
 		Label seatsLabelReturn = new Label("Seat number (return): ");
-		
-		for(int i = 'A'; i < 'F'; i++)
+
+/*		for(int i = 'A'; i < 'F'; i++)
 		{
 			for(int j = 1; j <= 30; j++)
 				seatsDeparture.getItems().add(String.valueOf(((char) i)) + String.valueOf(j));
@@ -63,12 +70,12 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 		{
 			for(int j = 1; j <= 30; j++)
 				seatsReturn.getItems().add(String.valueOf(((char) i)) + String.valueOf(j));
-		}
+		}*/
 		VBox fields = new VBox();
-		
+
 		List<KTextField> list = new ArrayList<KTextField>();
 		list.addAll(Arrays.asList(fnameField, lnameField, phoneField, passportField, emailField, countryField));
-		
+
 		for(KTextField field : list)
 		{
 			field.setLabelled(true);
@@ -101,7 +108,7 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 		names.setAlignment(Pos.CENTER);
 		contact.setAlignment(Pos.CENTER);
 		fields.getChildren().addAll(names, contact, origin, seatChoice);
-		
+
 		countryField.getLabel().setText("Nationality: ");
 		fnameField.getLabel().setText("First name: ");
 		lnameField.getLabel().setText("Last name: ");
@@ -113,17 +120,17 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 		lnameField.setFilter(Filter.LETTERS_ONLY);
 		phoneField.setFilter(Filter.NUMBERS_ONLY);
 		passportField.setFilter(Filter.NUMBERS_ONLY);
-		
+
 		fields.setAlignment(Pos.TOP_CENTER);
 		fields.setSpacing(10);
 		this.getChildren().addAll(startup, fields);
-			
+
 	}
 	@Override
 	public void setOnAction() {
 		NavButtons.getNext().setOnAction(new NextButtonAction());
 	}
-	
+
 	private class NextButtonAction implements EventHandler<ActionEvent>{
 
 		@Override
@@ -177,18 +184,44 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 					GUI.customer.getBooking().setSeatNumberDeparture(seatsDeparture.getSelectionModel().getSelectedItem());
 				else
 					return;
-				if(GUI.customer.getBooking().isReturning() && seatsReturn.getSelectionModel().getSelectedItem() != null)
-					GUI.customer.getBooking().setSeatNumberReturn(seatsReturn.getSelectionModel().getSelectedItem());
+				if(GUI.customer.getBooking().isReturning())
+					if(seatsReturn.getSelectionModel().getSelectedItem() != null)
+						GUI.customer.getBooking().setSeatNumberReturn(seatsReturn.getSelectionModel().getSelectedItem());
+					else
+						return;
+				
+				Alert confirmation = new Alert(AlertType.CONFIRMATION);
+				confirmation.setContentText("Are all the details correct?");
+				confirmation.setHeaderText("Confirmation");
+				Optional<ButtonType> result = confirmation.showAndWait();
+				if(result.get() == ButtonType.OK)
+				{
+					DBTables.insertBooking(GUI.customer);
+					GUI.customer = new Customer();
+					Platform.runLater(() -> {
+						try {
+							new GUI().start(new Stage());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
+				}
 				else
+				{
 					return;
-				NavButtons.moveScenes();
-				DBTables.insertBooking(GUI.customer);
+				}		
 			}
 		}
-		
+
 	}
 
 	public static ComboBox<String> getSeatsReturn() {
 		return seatsReturn;
+	}
+	public static ComboBox<String> getSeatsDeparture() {
+		return seatsDeparture;
+	}
+	public static void setSeatsReturn(ComboBox<String> seatsReturn) {
+		CustomerDetailsContent.seatsReturn = seatsReturn;
 	}
 }

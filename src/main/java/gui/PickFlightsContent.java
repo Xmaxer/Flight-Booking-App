@@ -1,6 +1,7 @@
 package gui;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import connections.DBConnection;
 import factories.QuoteResultCellFactory;
 import interfaces.Actionable;
 import javafx.collections.FXCollections;
@@ -46,7 +48,7 @@ public class PickFlightsContent extends VBox implements Actionable{
 		this.setAlignment(Pos.CENTER);
 		this.setSpacing(20);
 
-		
+
 	}
 
 	public void setOnAction()
@@ -59,8 +61,15 @@ public class PickFlightsContent extends VBox implements Actionable{
 		public void handle(ActionEvent arg0) {
 			if(GUI.getMainStage().getScene() instanceof PickFlightsScene)
 			{
-				if(results.getSelectionModel().getSelectedItem() != null)
-					GUI.customer.setBooking(results.getSelectionModel().getSelectedItem());
+				FlightBooking fb = results.getSelectionModel().getSelectedItem();
+				if(fb != null)
+				{
+/*					DBConnection.query("SELECT * FROM flight "
+							+ "WHERE airportdeparture = '" + fb.getAirportOutbound().getAirportID() + "' "
+							+ "AND airportarrival = '" + fb.getAirportOutbound().getAirportID() + "' "
+							+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(fb.getReturnDate()) + "'");*/
+					GUI.customer.setBooking(fb);
+				}
 				else
 					return;
 				NavButtons.moveScenes();

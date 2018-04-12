@@ -60,9 +60,7 @@ public class FlightBooking implements Cloneable{
 
 	public void setAirportInbound(Airport airportInbound) {
 		try {
-			System.out.println(airportInbound);
 			this.airportInbound = airportInbound != null ? airportInbound.clone() : null;
-			System.out.println(this.airportInbound);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}

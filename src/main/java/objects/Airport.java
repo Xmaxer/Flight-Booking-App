@@ -7,11 +7,11 @@ public class Airport implements Cloneable{
 		return (Airport) super.clone();
 	}
 
-	public String airport;
-	public String city;
-	public String country;
-	public String continent;
-	public String airportID;
+	private String airport;
+	private String city;
+	private String country;
+	private String continent;
+	private String airportID;
 	
 	public Airport(String airport, String city, String country, String continent, String airportID)
 	{

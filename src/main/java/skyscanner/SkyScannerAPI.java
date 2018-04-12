@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import connections.DBConnection;
 import connections.Downloader;
+import databases.DBTables;
 import exceptions.NoDatabaseConnectedException;
 import hidden.Constants;
 import objects.FlightBooking;
@@ -42,48 +43,7 @@ public class SkyScannerAPI {
 	}
 
 	private static void geoLocationsTable() {
-		DatabaseMetaData meta;
-		try {
-			meta = DBConnection.getConnection().getMetaData();
-			ResultSet res = meta.getTables(null, null, "airport", 
-				     new String[] {"TABLE"});
-			if(res.next())
-			{
-				return;
-			}
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		  
-		DBConnection.update("CREATE TABLE IF NOT EXISTS continent ("
-				+ "continentID varchar(10),"
-				+ "name varchar(255),"
-				+ "PRIMARY KEY (continentID))");
-		DBConnection.update("CREATE TABLE IF NOT EXISTS country ("
-				+ "countryID varchar(10),"
-				+ "name varchar(255),"
-				+ "currencyID varchar(10),"
-				+ "continentID varchar(10),"
-				+ "FOREIGN KEY (currencyID) REFERENCES currency(currencyID) ON DELETE RESTRICT ON UPDATE CASCADE,"
-				+ "FOREIGN KEY (continentID) REFERENCES continent(continentID) ON DELETE RESTRICT ON UPDATE CASCADE,"
-				+ "PRIMARY KEY (countryID))");
-		DBConnection.update("CREATE TABLE IF NOT EXISTS city ("
-				+ "cityID varchar(10),"
-				+ "name varchar(255),"
-				+ "latitude varchar(20),"
-				+ "longtitude varchar(20),"
-				+ "countryID varchar(10),"
-				+ "FOREIGN KEY (countryID) REFERENCES country(countryID) ON DELETE RESTRICT ON UPDATE CASCADE,"
-				+ "PRIMARY KEY (cityID))");
-		DBConnection.update("CREATE TABLE IF NOT EXISTS airport ("
-				+ "airportID varchar(10),"
-				+ "name varchar(255),"
-				+ "latitude varchar(20),"
-				+ "longtitude varchar(20),"
-				+ "cityID varchar(10),"
-				+ "FOREIGN KEY (cityID) REFERENCES city(cityID) ON DELETE RESTRICT ON UPDATE CASCADE,"
-				+ "PRIMARY KEY (airportID))");
+		DBTables.createGeoLocationsTables();
 
 		String data = Downloader.getData(allGeoLocationsURL);
 
@@ -152,23 +112,8 @@ public class SkyScannerAPI {
 	}
 
 	private static void currenciesTable() {
-		DatabaseMetaData meta;
-		try {
-			meta = DBConnection.getConnection().getMetaData();
-			ResultSet res = meta.getTables(null, null, "currency", 
-				     new String[] {"TABLE"});
-			if(res.next())
-			{
-				return;
-			}
+		DBTables.createCurrenciesTable();
 
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		DBConnection.update("CREATE TABLE IF NOT EXISTS currency ("
-				+ "currencyID varchar(10),"
-				+ "symbol varchar(10),"
-				+ "PRIMARY KEY(currencyID))");
 		String data = Downloader.getData(allCurrenciesURL);
 
 		JSONParser parser = new JSONParser();
@@ -188,23 +133,7 @@ public class SkyScannerAPI {
 	}
 
 	private static void localesTable() {
-		DatabaseMetaData meta;
-		try {
-			meta = DBConnection.getConnection().getMetaData();
-			ResultSet res = meta.getTables(null, null, "locale", 
-				     new String[] {"TABLE"});
-			if(res.next())
-			{
-				return;
-			}
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		DBConnection.update("CREATE TABLE IF NOT EXISTS locale ("
-				+ "localeID varchar(20),"
-				+ "name varchar(255),"
-				+ "PRIMARY KEY(localeID))");
+		DBTables.createLocalesTable();
 
 		String data = Downloader.getData(allValidLocalesURL);
 
@@ -230,8 +159,8 @@ public class SkyScannerAPI {
 		String market = "IE";
 		String currency = "EUR";
 		String locale = "en-GB";
-		String origin = booking.getAirportOutbound().airportID;
-		String destination = booking.getAirportInbound().airportID;
+		String origin = booking.getAirportOutbound().getAirportID();
+		String destination = booking.getAirportInbound().getAirportID();
 		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String outDate = booking.getOutboundDate().format(format);
 		String returnDate = (booking.getReturnDate() != null) ? booking.getReturnDate().format(format) : "";

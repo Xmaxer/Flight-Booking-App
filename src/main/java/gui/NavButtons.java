@@ -1,10 +1,14 @@
 package gui;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import connections.DBConnection;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,9 +24,9 @@ import wrappers.PickFlightsScene;
 public class NavButtons extends HBox{
 	private final static int WIDTH = GUI.FIRST_PAGE_WIDTH;
 	private final static int HEIGHT = 50;
-	private static Button exit = new Button("Exit");
-	private static Button next = new Button("Next");
-	private static Button back = new Button("Back");
+	private static final Button exit = new Button("Exit");
+	private static final Button next = new Button("Next");
+	private static final Button back = new Button("Back");
 	private static Stage mainStage;
 	private static List<Scene> scenes;
 	public NavButtons(Stage mainStage, List<Scene> scenes)
@@ -45,7 +49,7 @@ public class NavButtons extends HBox{
 		this.setAlignment(Pos.CENTER);
 
 		exit.setOnAction(e -> System.exit(0));
-		
+
 		mainStage.sceneProperty().addListener((obs, o ,n)->{
 			if(n instanceof LocationInputScene)
 			{
@@ -65,9 +69,70 @@ public class NavButtons extends HBox{
 					CustomerDetailsContent.getSeatsReturn().setDisable(false);
 				else
 					CustomerDetailsContent.getSeatsReturn().setDisable(true);
+				ResultSet rs = DBConnection.query("SELECT * FROM flight "
+						+ "WHERE airportdeparture = '" + GUI.customer.getBooking().getAirportOutbound().getAirportID() + "' "
+						+ "AND airportarrival = '" + GUI.customer.getBooking().getAirportInbound().getAirportID() + "' "
+						+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(GUI.customer.getBooking().getOutboundDate()) + "'");
+
+				List<String> seats = new ArrayList<String>();
+				try {
+					if(rs.next())
+					{
+						ResultSet rs2 = DBConnection.query("SELECT * FROM booking "
+								+ "WHERE flightnumber = '" + rs.getString("flightnumber") +"'");
+
+						while(rs2.next())
+							seats.add(rs2.getString("seatnumber"));
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				for(int i = 'A'; i < 'F'; i++)
+				{
+					for(int j = 1; j <= 30; j++)
+					{
+						String seatNo = String.valueOf(((char) i)) + String.valueOf(j);
+						if(!seats.contains(seatNo))
+						{
+							CustomerDetailsContent.getSeatsDeparture().getItems().add(seatNo);
+						}
+					}
+				}
+				if(GUI.customer.getBooking().isReturning())
+				{
+					rs = DBConnection.query("SELECT * FROM flight "
+							+ "WHERE airportdeparture = '" + GUI.customer.getBooking().getAirportInbound().getAirportID() + "' "
+							+ "AND airportarrival = '" + GUI.customer.getBooking().getAirportOutbound().getAirportID() + "' "
+							+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(GUI.customer.getBooking().getReturnDate()) + "'");
+
+					seats = new ArrayList<String>();
+					try {
+						if(rs.next())
+						{
+							ResultSet rs2 = DBConnection.query("SELECT * FROM booking "
+									+ "WHERE flightnumber = '" + rs.getString("flightnumber") +"'");
+
+							while(rs2.next())
+								seats.add(rs2.getString("seatnumber"));
+						}
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					for(int i = 'A'; i < 'F'; i++)
+					{
+						for(int j = 1; j <= 30; j++)
+						{
+							String seatNo = String.valueOf(((char) i)) + String.valueOf(j);
+							if(seats.contains(seatNo))
+							{
+								CustomerDetailsContent.getSeatsReturn().getItems().add(seatNo);
+							}
+						}
+					}
+				}
 			}
 		});
-		
+
 		back.setOnAction(e -> {
 			for(int i = 0, size = scenes.size(); i < size; i++)
 				if(mainStage.getScene().equals(scenes.get(i)) && i > 0)
