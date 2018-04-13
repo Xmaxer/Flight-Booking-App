@@ -4,14 +4,15 @@ import constants.Filter;
 import exceptions.InvalidShakeSpeedException;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import objects.Airport;
 
 public class KTextField<T> extends TextField{
 
@@ -94,13 +95,17 @@ public class KTextField<T> extends TextField{
 		label = new Label();
 		searchable = false;
 		labelled = false;
-		
+
 		resultsBox.getSelectionModel().selectedItemProperty().addListener((obs, old, n) -> {
-			if(n != null)
-			{
-				itself.setText(n.toString());
-				this.resultsBox.setOpacity(0);
-			}
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if(n != null && ((Airport) n).getCity() != null && !((Airport) n).getCity().isEmpty())
+					{
+						itself.setText(n.toString());
+					}
+				}
+			});
 		});
 		this.textProperty().addListener(new ChangeListener<String>() {
 

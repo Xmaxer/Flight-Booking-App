@@ -138,7 +138,7 @@ public class DBTables {
 	}
 
 
-	public static void createGeoLocationsTables() {
+	public static boolean createGeoLocationsTables() {
 		DatabaseMetaData meta;
 		try {
 			meta = DBConnection.getConnection().getMetaData();
@@ -146,7 +146,7 @@ public class DBTables {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				return;
+				return false;
 			}
 
 		} catch (SQLException e1) {
@@ -181,10 +181,11 @@ public class DBTables {
 				+ "cityID varchar(10),"
 				+ "FOREIGN KEY (cityID) REFERENCES city(cityID) ON DELETE RESTRICT ON UPDATE CASCADE,"
 				+ "PRIMARY KEY (airportID))");
+		return true;
 	}
 
 
-	public static void createCurrenciesTable() {
+	public static boolean createCurrenciesTable() {
 		DatabaseMetaData meta;
 		try {
 			meta = DBConnection.getConnection().getMetaData();
@@ -192,7 +193,7 @@ public class DBTables {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				return;
+				return false;
 			}
 
 		} catch (SQLException e1) {
@@ -202,10 +203,11 @@ public class DBTables {
 				+ "currencyID varchar(10),"
 				+ "symbol varchar(10),"
 				+ "PRIMARY KEY(currencyID))");
+		return true;
 	}
 
 
-	public static void createLocalesTable() {
+	public static boolean createLocalesTable() {
 		DatabaseMetaData meta;
 		try {
 			meta = DBConnection.getConnection().getMetaData();
@@ -213,7 +215,7 @@ public class DBTables {
 				     new String[] {"TABLE"});
 			if(res.next())
 			{
-				return;
+				return false;
 			}
 
 		} catch (SQLException e1) {
@@ -223,5 +225,6 @@ public class DBTables {
 				+ "localeID varchar(20),"
 				+ "name varchar(255),"
 				+ "PRIMARY KEY(localeID))");
+		return true;
 	}
 }

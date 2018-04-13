@@ -155,7 +155,9 @@ public class LocationInputContent extends VBox implements Actionable{
 
 				if(results == 0 || newVal.isEmpty())
 				{
-					field.getResultsBox().setItems(FXCollections.observableList(Arrays.asList(new Airport[] {new Airport("", "",  "", "", "No result")})));
+					/**THIS LINE IS THE ISSUE*/
+					field.getResultsBox().getSelectionModel().clearSelection();
+					field.getResultsBox().setItems(FXCollections.observableList(Arrays.asList(new Airport[] {new Airport("", "", "", "", "No result")})));
 
 				}
 				else
