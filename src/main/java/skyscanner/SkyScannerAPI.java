@@ -31,7 +31,7 @@ public class SkyScannerAPI {
 	{
 		if(DBConnection.getConnection() != null)
 		{
-			localesTable();
+			//localesTable();
 			currenciesTable();
 			geoLocationsTable();
 		} else

@@ -37,7 +37,7 @@ public class LocationInputContent extends VBox implements Actionable{
 	private DatePicker forwardDate;
 	private DatePicker returnDate;
 	private CheckBox returning;
-	
+
 	public LocationInputContent()
 	{
 		forwardDate = new DatePicker();
@@ -153,14 +153,11 @@ public class LocationInputContent extends VBox implements Actionable{
 					results++;
 				}
 
-				if(results == 0 || newVal.isEmpty())
+				if((results == 0 || newVal.isEmpty()) && field.getResultsBox().getSelectionModel().getSelectedItem() == null)
 				{
-					/**THIS LINE IS THE ISSUE*/
-					field.getResultsBox().getSelectionModel().clearSelection();
 					field.getResultsBox().setItems(FXCollections.observableList(Arrays.asList(new Airport[] {new Airport("", "", "", "", "No result")})));
-
 				}
-				else
+				else if(results != 0)
 				{
 					list = FXCollections.observableList(items);
 					field.getResultsBox().setItems(list);
@@ -169,7 +166,8 @@ public class LocationInputContent extends VBox implements Actionable{
 				field.getResultsBox().setMinHeight(65*field.getResultsBox().getItems().size());
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}		}	
+			}		
+		}	
 	}
 	public KTextField<Airport> getOutboundField() {
 		return outboundField;

@@ -19,7 +19,11 @@ public class GUI extends Application{
 	public static final int FIRST_PAGE_WIDTH = 500;
 	public static Customer customer = new Customer();
 	private static Stage mainStage;
-
+	
+	public void startGame(Stage mainStage)
+	{
+		
+	}
 	@Override
 	public void start(Stage mainStage) throws Exception {
 
@@ -27,7 +31,6 @@ public class GUI extends Application{
 		VBox firstPageRoot = new VBox();
 		VBox secondPageRoot = new VBox();
 		VBox thirdPageRoot = new VBox();
-		//VBox fourthPageRoot = new VBox();
 
 		List<Scene> scenes = new ArrayList<Scene>();
 
@@ -40,9 +43,6 @@ public class GUI extends Application{
 		CustomerDetailsScene thirdPageScene = new CustomerDetailsScene(thirdPageRoot, FIRST_PAGE_WIDTH, FIRST_PAGE_HEIGHT);
 		scenes.add(thirdPageScene);
 		
-		//ConfirmScene fourthPageScene = new ConfirmScene(fourthPageRoot, FIRST_PAGE_WIDTH, FIRST_PAGE_HEIGHT);
-		//scenes.add(fourthPageScene);
-		
 		LocationInputContent searchInputs = new LocationInputContent();
 		searchInputs.setOnAction();
 		
@@ -51,11 +51,9 @@ public class GUI extends Application{
 		
 		
 		NavButtons buttonsContainer = new NavButtons(mainStage, scenes);
-		//	NavButtons buttonsContainer2 = new NavButtons(mainStage, scenes);
 
 		thirdPageRoot.getChildren().addAll(customerDetails, buttonsContainer);
 		secondPageRoot.getChildren().addAll(flightChoice, buttonsContainer);
-		//fourthPageRoot.getChildren().addAll(elements);
 		firstPageRoot.getChildren().addAll(searchInputs, buttonsContainer);
 		
 
@@ -64,8 +62,6 @@ public class GUI extends Application{
 		mainStage.show();
 		mainStage.setResizable(false);
 		firstPageScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-		mainStage.setOnHiding(e -> System.exit(0));
-
 	}
 
 	public static void launchGUI(String[] args)

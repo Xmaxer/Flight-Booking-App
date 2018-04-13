@@ -197,7 +197,13 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 				if(result.get() == ButtonType.OK)
 				{
 					DBTables.insertBooking(GUI.customer);
+					
+					confirmation.close();
+					confirmation.setContentText("Booking successful! Close this dialogue to end the booking.");
+					confirmation.setHeaderText("Success!");
+					confirmation.showAndWait();
 					GUI.customer = new Customer();
+					GUI.getMainStage().close();
 					Platform.runLater(() -> {
 						try {
 							new GUI().start(new Stage());
