@@ -28,7 +28,7 @@ import wrappers.CustomerDetailsScene;
 public class CustomerDetailsContent extends VBox implements Actionable{
 
 	private static final int WIDTH = GUI.FIRST_PAGE_WIDTH;
-	private static final int HEIGHT = GUI.FIRST_PAGE_HEIGHT - 50;
+	private static final int HEIGHT = GUI.FIRST_PAGE_HEIGHT - 80;
 	private KTextField fnameField;
 	private KTextField lnameField;
 	private KTextField phoneField;
@@ -38,9 +38,10 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 	private DatePicker dob;
 	private static ComboBox<String> seatsDeparture;
 	private static ComboBox<String> seatsReturn;
-
+	private NextButtonAction action;
 	public CustomerDetailsContent()
 	{
+		action = new NextButtonAction();
 		Text startup = new Text("Fill out all the fields below.");
 		this.setMaxSize(WIDTH, HEIGHT);
 		this.setMinSize(WIDTH, HEIGHT);
@@ -128,7 +129,7 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 	}
 	@Override
 	public void setOnAction() {
-		NavButtons.getNext().setOnAction(new NextButtonAction());
+		NavButtons.getNext().setOnAction(action);
 	}
 
 	private class NextButtonAction implements EventHandler<ActionEvent>{
@@ -229,5 +230,32 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 	}
 	public static void setSeatsReturn(ComboBox<String> seatsReturn) {
 		CustomerDetailsContent.seatsReturn = seatsReturn;
+	}
+	public NextButtonAction getAction() {
+		return action;
+	}
+	public KTextField getFnameField() {
+		return fnameField;
+	}
+	public KTextField getLnameField() {
+		return lnameField;
+	}
+	public KTextField getPhoneField() {
+		return phoneField;
+	}
+	public KTextField getPassportField() {
+		return passportField;
+	}
+	public KTextField getEmailField() {
+		return emailField;
+	}
+	public KTextField getCountryField() {
+		return countryField;
+	}
+	public DatePicker getDob() {
+		return dob;
+	}
+	public void setAction(NextButtonAction action) {
+		this.action = action;
 	}
 }

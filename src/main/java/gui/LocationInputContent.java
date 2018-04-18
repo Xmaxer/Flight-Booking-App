@@ -30,7 +30,7 @@ import wrappers.LocationInputScene;
 
 public class LocationInputContent extends VBox implements Actionable{
 
-	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 50;
+	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 80;
 	private final static double WIDTH = GUI.FIRST_PAGE_WIDTH;
 	private KTextField<Airport> outboundField;
 	private KTextField<Airport> inboundField;

@@ -31,7 +31,7 @@ import wrappers.PickFlightsScene;
 
 public class PickFlightsContent extends VBox implements Actionable{
 
-	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 50;
+	private final static double HEIGHT = GUI.FIRST_PAGE_HEIGHT - 80;
 	private final static double WIDTH = GUI.FIRST_PAGE_WIDTH;
 	private ListView<FlightBooking> results;
 	private final Text noResultsText = new Text("No results found");

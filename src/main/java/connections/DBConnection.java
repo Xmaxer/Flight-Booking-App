@@ -76,6 +76,7 @@ public class DBConnection{
 	public static synchronized ResultSet query(String query)
 	{
 		try {
+			System.out.println(query);
 			return DBConnection.statement.executeQuery(query);
 		} catch (SQLException e) {
 			e.printStackTrace();

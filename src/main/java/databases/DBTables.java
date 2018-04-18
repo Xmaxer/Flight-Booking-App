@@ -4,11 +4,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 import connections.DBConnection;
-import gui.CustomerDetailsContent;
 import gui.GUI;
 import objects.Customer;
 import objects.FlightBooking;
@@ -94,16 +90,12 @@ public class DBTables {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		if(GUI.customer.getBooking().isReturning())
-		{
-
-		}
 
 		DBConnection.update("INSERT INTO booking values ("
 				+ "'" + fn + "',"
 				+ "'" + customer.getPassportNo() + "',"
 				+ "'" + fb.getSeatNumberDeparture() + "')");
-		
+
 		if(fb.isReturning())
 		{
 			rs = DBConnection.query("SELECT * FROM flight "
@@ -143,7 +135,7 @@ public class DBTables {
 		try {
 			meta = DBConnection.getConnection().getMetaData();
 			ResultSet res = meta.getTables(null, null, "airport", 
-				     new String[] {"TABLE"});
+					new String[] {"TABLE"});
 			if(res.next())
 			{
 				return false;
@@ -152,7 +144,7 @@ public class DBTables {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		  
+
 		DBConnection.update("CREATE TABLE IF NOT EXISTS continent ("
 				+ "continentID varchar(10),"
 				+ "name varchar(255),"
@@ -190,7 +182,7 @@ public class DBTables {
 		try {
 			meta = DBConnection.getConnection().getMetaData();
 			ResultSet res = meta.getTables(null, null, "currency", 
-				     new String[] {"TABLE"});
+					new String[] {"TABLE"});
 			if(res.next())
 			{
 				return false;
@@ -212,7 +204,7 @@ public class DBTables {
 		try {
 			meta = DBConnection.getConnection().getMetaData();
 			ResultSet res = meta.getTables(null, null, "locale", 
-				     new String[] {"TABLE"});
+					new String[] {"TABLE"});
 			if(res.next())
 			{
 				return false;
@@ -226,5 +218,39 @@ public class DBTables {
 				+ "name varchar(255),"
 				+ "PRIMARY KEY(localeID))");
 		return true;
+	}
+
+
+	public static void updateBooking(Customer customer) {
+
+		DBConnection.update("UPDATE customer "
+				+ "SET firstname='" + customer.getFname() + "', "
+				+ "lastname='" + customer.getLname() + "', "
+				+ "dob='" + DateTimeFormatter.ofPattern("YYYY-MM-dd").format(customer.getDob()) + "', "
+				+ "email='" + customer.getEmail() + "', "
+				+ "telnumber='" + customer.getPhoneNo() + "', "
+				+ "nationality='" + customer.getNationality() + "' "
+				+ "WHERE passportnumber='" + customer.getPassportNo() + "'");
+
+		ResultSet rs = DBConnection.query("SELECT flightnumber FROM flight "
+				+ "WHERE airportdeparture='" + customer.getBooking().getAirportOutbound().getAirportID() + "' AND "
+				+ "airportarrival='" + customer.getBooking().getAirportInbound().getAirportID() + "' AND "
+				+ "departuredate='" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(customer.getBooking().getOutboundDate()) + "'");
+
+		String fn = "";
+		try {
+			if(rs.next())
+			{
+				fn = rs.getString("flightnumber");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(!fn.isEmpty())
+		{
+			DBConnection.update("UPDATE booking "
+					+ "SET seatnumber='" + customer.getBooking().getSeatNumberDeparture() + "'"
+							+ " WHERE flightnumber='" + fn + "' AND passportnumber='" + customer.getPassportNo() +"'");
+		}
 	}
 }
