@@ -2,12 +2,13 @@ package gui;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import connections.DBConnection;
 import constants.Filter;
+import databases.DBTables;
 import factories.AirportCellFactory;
 import interfaces.Actionable;
 import javafx.beans.value.ChangeListener;
@@ -18,6 +19,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tooltip;
@@ -129,13 +132,7 @@ public class LocationInputContent extends VBox implements Actionable{
 		}
 		@Override
 		public void changed(ObservableValue<? extends String> arg0, String arg1, String newVal) {
-			ResultSet result = DBConnection.query("SELECT c.name AS city, ct.name AS country, a.name AS airport, a.airportID, con.name AS continent FROM country ct JOIN  city c ON c.countryID = ct.countryID " + 
-					"JOIN airport a ON a.cityID = c.cityID "
-					+ "JOIN continent con ON con.continentID = ct.continentID " + 
-					"WHERE c.name LIKE '%" + newVal + "%' " + 
-					"OR ct.name LIKE '%" + newVal + "%' "
-					+ "OR a.name LIKE '%" + newVal + "%' " + 
-					"ORDER BY c.name ASC LIMIT 5");
+			ResultSet result = DBTables.getInputLocation(newVal);
 
 			try {
 				int results = 0;
@@ -186,29 +183,60 @@ public class LocationInputContent extends VBox implements Actionable{
 		public void handle(ActionEvent arg0) {
 			if(GUI.getMainStage().getScene() instanceof LocationInputScene)
 			{
-				if(forwardDate.getValue() != null)
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setHeaderText("Error");
+
+				if(forwardDate.getValue() != null && LocalDate.now().compareTo(forwardDate.getValue()) <= 1)
 					GUI.customer.getBooking().setOutboundDate(forwardDate.getValue().atTime(12, 0));
 				else
+				{
+					alert.setContentText("Invalid departure date.");
+					alert.showAndWait();
 					return;
+				}
 				if(returning.isSelected())
-					if(returnDate.getValue() != null)
+					if(returnDate.getValue() != null && LocalDate.now().compareTo(returnDate.getValue()) <= 1)
 						GUI.customer.getBooking().setReturnDate(returnDate.getValue().atTime(12, 0));
 					else
+					{
+						alert.setContentText("Invalid return date.");
+						alert.showAndWait();
 						return;
+					}
 				else
 					GUI.customer.getBooking().setReturnDate(null);
-				if(inboundField.getResultsBox().getSelectionModel().getSelectedItem() != null)
+
+				if(GUI.customer.getBooking().getReturnDate() != null)
+				{
+					if(forwardDate.getValue().compareTo(returnDate.getValue()) >= 0)
+					{
+						alert.setContentText("Departure date must occur BEFORE arrival.");
+						alert.showAndWait();
+						return;
+					}
+				}
+				if(inboundField.getResultsBox().getSelectionModel().getSelectedItem() != null && !inboundField.getResultsBox().getSelectionModel().getSelectedItem().getCity().isEmpty())
 					GUI.customer.getBooking().setAirportInbound((Airport) inboundField.getResultsBox().getSelectionModel().getSelectedItem());
 				else
 				{
+					alert.setContentText("No valid inbound destination selected.");
 					inboundField.shakeAnimation();
+					alert.showAndWait();
 					return;
 				}
-				if(outboundField.getResultsBox().getSelectionModel().getSelectedItem() != null)
+				if(outboundField.getResultsBox().getSelectionModel().getSelectedItem() != null && !outboundField.getResultsBox().getSelectionModel().getSelectedItem().getCity().isEmpty())
 					GUI.customer.getBooking().setAirportOutbound((Airport) outboundField.getResultsBox().getSelectionModel().getSelectedItem());
 				else
 				{
+					alert.setContentText("No valid outbound destination selected.");
 					outboundField.shakeAnimation();
+					alert.showAndWait();
+					return;
+				}
+				if(outboundField.getResultsBox().getSelectionModel().getSelectedItem().getAirportID().equalsIgnoreCase(inboundField.getResultsBox().getSelectionModel().getSelectedItem().getAirportID()))
+				{
+					alert.setContentText("Departure and arrival airports cannot be the same.");
+					alert.showAndWait();
 					return;
 				}
 				NavButtons.moveScenes();

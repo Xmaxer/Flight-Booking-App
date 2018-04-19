@@ -4,13 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import connections.DBConnection;
 import constants.Filter;
 import databases.DBTables;
 import factories.BookingCellFactory;
@@ -33,7 +31,6 @@ import javafx.stage.Stage;
 import objects.Airport;
 import objects.Customer;
 import objects.FlightBooking;
-import wrappers.CustomerDetailsScene;
 @SuppressWarnings("rawtypes")
 public class UpdateBookingContent extends VBox{
 
@@ -139,8 +136,7 @@ public class UpdateBookingContent extends VBox{
 		searchBtn.setOnAction(e -> {
 			if(!passportField.getText().isEmpty())
 			{
-				ResultSet rs = DBConnection.query("SELECT * FROM booking b JOIN flight f ON f.flightnumber = b.flightnumber JOIN customer c ON c.passportnumber = b.passportnumber "
-						+ "WHERE c.passportnumber = '" + passportField.getText() + "'");
+				ResultSet rs = DBTables.findCustomer(passportField);
 
 				try {
 					List<Customer> resultsList = new ArrayList<Customer>();
@@ -267,17 +263,13 @@ public class UpdateBookingContent extends VBox{
 
 	private void setPossibleSeats(Customer c)
 	{
-		ResultSet rs = DBConnection.query("SELECT * FROM flight "
-				+ "WHERE airportdeparture = '" + c.getBooking().getAirportOutbound().getAirportID() + "' "
-				+ "AND airportarrival = '" + c.getBooking().getAirportInbound().getAirportID() + "' "
-				+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(c.getBooking().getOutboundDate()) + "'");
+		ResultSet rs = DBTables.getAllFlightsForSelectedCustomer(c);
 
 		List<String> seats = new ArrayList<String>();
 		try {
 			if(rs.next())
 			{
-				ResultSet rs2 = DBConnection.query("SELECT * FROM booking "
-						+ "WHERE flightnumber = '" + rs.getString("flightnumber") +"'");
+				ResultSet rs2 = DBTables.getAllFlightsByFlightNumber(rs);
 
 				while(rs2.next())
 					seats.add(rs2.getString("seatnumber"));

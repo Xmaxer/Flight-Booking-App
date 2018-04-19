@@ -3,11 +3,10 @@ package gui;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import connections.DBConnection;
+import databases.DBTables;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -53,10 +52,7 @@ public class AllFlightsContent extends Stage{
 		root.setAlignment(Pos.CENTER);
 		root.setSpacing(20);
 		
-		ResultSet rs = DBConnection.query("SELECT f.airline, f.flightnumber, f.airportdeparture, f.airportarrival, f.departuredate , COUNT(*) AS counter " + 
-				"FROM flight f, booking b " + 
-				"WHERE b.flightnumber = f.flightnumber " + 
-				"GROUP BY b.flightnumber");
+		ResultSet rs = DBTables.getAllFlights();
 		
 		try {
 			while(rs.next())

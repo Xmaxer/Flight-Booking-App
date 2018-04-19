@@ -1,16 +1,11 @@
 package skyscanner;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import connections.DBConnection;
 import connections.Downloader;
 import databases.DBTables;
@@ -21,7 +16,7 @@ import objects.FlightBooking;
 public class SkyScannerAPI {
 
 	private final static String API_KEY = Constants.SKYSCANNER_API_KEY;
-	private final static String allValidLocalesURL = "http://partners.api.skyscanner.net/apiservices/reference/v1.0/locales?apiKey=" + API_KEY;
+	//private final static String allValidLocalesURL = "http://partners.api.skyscanner.net/apiservices/reference/v1.0/locales?apiKey=" + API_KEY;
 	private final static String allCurrenciesURL = "http://partners.api.skyscanner.net/apiservices/reference/v1.0/currencies?apiKey=" + API_KEY;
 	private final static String allGeoLocationsURL = "http://partners.api.skyscanner.net/apiservices/geo/v1.0?apiKey=" + API_KEY;
 	private final static String quotesBaseURL = "http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/";
@@ -56,7 +51,7 @@ public class SkyScannerAPI {
 					String val = String.valueOf(a.next());
 					JSONObject parsed = (JSONObject) parser.parse(val);
 					String continentID = String.valueOf(parsed.get("Id"));
-					DBConnection.update("INSERT INTO continent VALUES ('"
+					DBConnection.update("INSERT INTO " + DBTables.CONTINENT_TNAME + " VALUES ('"
 							+ continentID + "','"
 							+ String.valueOf(parsed.get("Name")).replaceAll("'", "") + "')");
 
@@ -67,7 +62,7 @@ public class SkyScannerAPI {
 						val = String.valueOf(b.next());
 						parsed = (JSONObject) parser.parse(val);
 						String countryID = String.valueOf(parsed.get("Id"));
-						DBConnection.update("INSERT INTO country VALUES ('"
+						DBConnection.update("INSERT INTO " + DBTables.COUNTRY_TNAME + " VALUES ('"
 								+ countryID + "','"
 								+ String.valueOf(parsed.get("Name")).replaceAll("'", "") + "','"
 								+ String.valueOf(parsed.get("CurrencyId")) + "','"
@@ -81,7 +76,7 @@ public class SkyScannerAPI {
 							parsed = (JSONObject) parser.parse(val);
 							String cityID = String.valueOf(parsed.get("Id"));
 							String[] coords = String.valueOf(parsed.get("Location")).replaceAll(" ", "").split(",");
-							DBConnection.update("INSERT INTO city VALUES ('"
+							DBConnection.update("INSERT INTO " + DBTables.CITY_TNAME + " VALUES ('"
 									+ cityID + "','"
 									+ String.valueOf(parsed.get("Name")).replaceAll("'", "") + "','"
 									+ coords[1] + "','"
@@ -95,7 +90,7 @@ public class SkyScannerAPI {
 								val = String.valueOf(d.next());
 								parsed = (JSONObject) parser.parse(val);
 								coords = String.valueOf(parsed.get("Location")).replaceAll(" ", "").split(",");
-								DBConnection.update("INSERT INTO airport VALUES('"
+								DBConnection.update("INSERT INTO " + DBTables.AIRPORT_TNAME + " VALUES('"
 										+ String.valueOf(parsed.get("Id")) + "','"
 										+ String.valueOf(parsed.get("Name")).replaceAll("'", "") + "','"
 										+ coords[1] + "','"
@@ -123,7 +118,7 @@ public class SkyScannerAPI {
 				while(i.hasNext())
 				{
 					String val = String.valueOf(i.next());
-					DBConnection.update("INSERT INTO currency VALUES ('"
+					DBConnection.update("INSERT INTO " + DBTables.CURRENCY_TNAME + " VALUES ('"
 							+ String.valueOf(((JSONObject) parser.parse(String.valueOf(val))).get("Code")) + "','"
 							+ String.valueOf(((JSONObject) parser.parse(String.valueOf(val))).get("Symbol")) + "')");
 				}
@@ -134,7 +129,7 @@ public class SkyScannerAPI {
 		}
 	}
 
-	private static void localesTable() {
+/*	private static void localesTable() {
 		if(DBTables.createLocalesTable())
 		{
 			String data = Downloader.getData(allValidLocalesURL);
@@ -155,7 +150,7 @@ public class SkyScannerAPI {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 	public static String getflights(FlightBooking booking)
 	{

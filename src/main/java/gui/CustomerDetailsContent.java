@@ -59,19 +59,10 @@ public class CustomerDetailsContent extends VBox implements Actionable{
 		seatsReturn = new ComboBox<String>();
 		Label dobLabel = new Label("Date of birth: ");
 		seatsDeparture.setVisibleRowCount(10);
+		seatsReturn.setVisibleRowCount(10);
 		Label seatsLabelDeparture = new Label("Seat number (outbound): ");
 		Label seatsLabelReturn = new Label("Seat number (return): ");
 
-/*		for(int i = 'A'; i < 'F'; i++)
-		{
-			for(int j = 1; j <= 30; j++)
-				seatsDeparture.getItems().add(String.valueOf(((char) i)) + String.valueOf(j));
-		}
-		for(int i = 'A'; i < 'F'; i++)
-		{
-			for(int j = 1; j <= 30; j++)
-				seatsReturn.getItems().add(String.valueOf(((char) i)) + String.valueOf(j));
-		}*/
 		VBox fields = new VBox();
 
 		List<KTextField> list = new ArrayList<KTextField>();

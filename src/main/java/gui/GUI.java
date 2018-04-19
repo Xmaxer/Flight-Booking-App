@@ -2,11 +2,10 @@ package gui;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import connections.DBConnection;
+import databases.DBTables;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -90,18 +89,14 @@ public class GUI extends Application{
 			{
 				options.setDisable(true);
 				((CustomerDetailsContent) ((VBox) n.getRoot()).getChildren().get(1)).setOnAction();
-				CustomerDetailsContent.getSeatsReturn().setDisable(GUI.customer.getBooking().isReturning());
-				ResultSet rs = DBConnection.query("SELECT * FROM flight "
-						+ "WHERE airportdeparture = '" + GUI.customer.getBooking().getAirportOutbound().getAirportID() + "' "
-						+ "AND airportarrival = '" + GUI.customer.getBooking().getAirportInbound().getAirportID() + "' "
-						+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(GUI.customer.getBooking().getOutboundDate()) + "'");
+				CustomerDetailsContent.getSeatsReturn().setDisable(!GUI.customer.getBooking().isReturning());
+				ResultSet rs = DBTables.getFlightForCustomer();
 
 				List<String> seats = new ArrayList<String>();
 				try {
 					if(rs.next())
 					{
-						ResultSet rs2 = DBConnection.query("SELECT * FROM booking "
-								+ "WHERE flightnumber = '" + rs.getString("flightnumber") +"'");
+						ResultSet rs2 = DBTables.getAllFlightsByFlightNumber(rs);
 
 						while(rs2.next())
 							seats.add(rs2.getString("seatnumber"));
@@ -122,17 +117,12 @@ public class GUI extends Application{
 				}
 				if(GUI.customer.getBooking().isReturning())
 				{
-					rs = DBConnection.query("SELECT * FROM flight "
-							+ "WHERE airportdeparture = '" + GUI.customer.getBooking().getAirportInbound().getAirportID() + "' "
-							+ "AND airportarrival = '" + GUI.customer.getBooking().getAirportOutbound().getAirportID() + "' "
-							+ "AND departuredate = '" + DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(GUI.customer.getBooking().getReturnDate()) + "'");
-
+					rs = DBTables.getAllReturningFlightsForCustomer();
 					seats = new ArrayList<String>();
 					try {
 						if(rs.next())
 						{
-							ResultSet rs2 = DBConnection.query("SELECT * FROM booking "
-									+ "WHERE flightnumber = '" + rs.getString("flightnumber") +"'");
+							ResultSet rs2 = DBTables.getAllFlightsByFlightNumber(rs);
 
 							while(rs2.next())
 								seats.add(rs2.getString("seatnumber"));
@@ -145,7 +135,7 @@ public class GUI extends Application{
 						for(int j = 1; j <= 30; j++)
 						{
 							String seatNo = String.valueOf(((char) i)) + String.valueOf(j);
-							if(seats.contains(seatNo))
+							if(!seats.contains(seatNo))
 							{
 								CustomerDetailsContent.getSeatsReturn().getItems().add(seatNo);
 							}
@@ -164,6 +154,7 @@ public class GUI extends Application{
 			UpdateBookingContent ubc = new UpdateBookingContent();
 			Scene updateFlightsScene = new Scene(ubc, 400, 400);
 			Stage updateFlightsStage = new Stage();
+			updateFlightsStage.setTitle("Update Booking");
 			updateFlightsStage.setScene(updateFlightsScene);
 			updateFlightsStage.show();
 		});

@@ -1,14 +1,10 @@
 package gui;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import connections.DBConnection;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,9 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import wrappers.CustomerDetailsScene;
-import wrappers.LocationInputScene;
-import wrappers.PickFlightsScene;
 
 public class NavButtons extends HBox{
 	private final static int WIDTH = GUI.FIRST_PAGE_WIDTH;

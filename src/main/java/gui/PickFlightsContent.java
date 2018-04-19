@@ -1,7 +1,6 @@
 package gui;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import connections.DBConnection;
 import factories.QuoteResultCellFactory;
 import interfaces.Actionable;
 import javafx.collections.FXCollections;
@@ -77,6 +75,7 @@ public class PickFlightsContent extends VBox implements Actionable{
 		}
 
 	}
+	@SuppressWarnings("rawtypes")
 	public void updateList()
 	{
 		//VBox dataPiece = new VBox();
