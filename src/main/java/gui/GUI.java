@@ -12,6 +12,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import objects.Customer;
 import wrappers.CustomerDetailsScene;
@@ -156,6 +157,7 @@ public class GUI extends Application{
 			Stage updateFlightsStage = new Stage();
 			updateFlightsStage.setTitle("Update Booking");
 			updateFlightsStage.setScene(updateFlightsScene);
+			updateFlightsStage.initModality(Modality.APPLICATION_MODAL);
 			updateFlightsStage.show();
 		});
 		

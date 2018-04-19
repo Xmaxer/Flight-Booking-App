@@ -54,7 +54,7 @@ public class DBConnection{
 			return DBConnection.statement.executeUpdate(query);
 		} catch(SQLIntegrityConstraintViolationException e)
 		{
-			
+			//Ignore this error
 		}
 		catch(SQLSyntaxErrorException e)
 		{
@@ -85,6 +85,11 @@ public class DBConnection{
 	}
 	public static synchronized void createConnection(String username, String password, String database)
 	{
+		if(IP == null || port == 0)
+		{
+			System.out.println("Uninitialised IP or Port");
+			return;
+		}
 		DBConnection.baseURL = "jdbc:mysql://" + IP + ":" + port + "/";
 		DBConnection.username = username;
 		DBConnection.password = password;
