@@ -23,11 +23,13 @@ public class QuoteResultCell extends ListCell<FlightBooking>{
 			VBox result = new VBox();
 			result.setAlignment(Pos.CENTER);
 			
-			Text price = new Text(String.valueOf(item.getTotalCost()));
-			Text outboundLoc = new Text(item.getAirportOutbound().getAirport());
-			Text inboundLoc = new Text(item.getAirportInbound().getAirport());
-			Text outboundAirline = new Text(item.getAirlineDeparture());
-			Text inboundAirline = new Text(item.getAirlineReturn());
+			Text price = new Text("€" + String.valueOf(item.getTotalCost()));
+			Text outboundLoc = new Text("From: " + item.getAirportOutbound().getAirport());
+			Text inboundLoc = new Text("To: " + item.getAirportInbound().getAirport());
+			Text outboundAirline = new Text("Airline: " + item.getAirlineDeparture());
+			Text inboundAirline = new Text("Airline: " + item.getAirlineReturn());
+			if(inboundAirline.getText().substring(9, 13).equals("null"))
+				inboundAirline.setText("");
 			
 			HBox h = new HBox();
 			

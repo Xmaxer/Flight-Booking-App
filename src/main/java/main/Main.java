@@ -15,7 +15,7 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-		DBConnection.setConnectionDetails("localhost", 3306);
+		DBConnection.setConnectionDetails(Constants.BASE_IP, Constants.BASE_PORT);
 		DBConnection.createConnection(USER, PASS);
 		DBConnection.update("CREATE DATABASE IF NOT EXISTS " + DB_NAME + " "
 				+ "DEFAULT CHARACTER SET utf8 " + 
